@@ -12,6 +12,8 @@ static unsigned long rsr_el(void)
 	__asm__ volatile("mrs %0, CurrentEL" : "=r"(v));
 	return v >> 2;
 }
+void secondary_main(unsigned long i) { (void)i; for (;;) __asm__ volatile("wfe"); }
+void exc_handler(unsigned long slot, unsigned long *regs) { (void)slot; (void)regs; for (;;) __asm__ volatile("wfe"); }
 void shim_main(unsigned long dtb)
 {
 	con_clear(BLUE);

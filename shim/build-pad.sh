@@ -13,9 +13,5 @@ aarch64-linux-gnu-objcopy -O binary out-pad/shim.elf out-pad/Image
 size=$(aarch64-linux-gnu-nm out-pad/shim.elf | awk '$3=="_end"{print strtonum("0x"$1)}')
 truncate -s "$size" out-pad/Image
 (cd out-pad && rm -rf rd && mkdir rd && cd rd && echo x > x && find . | cpio -o -H newc --quiet | gzip -9 > ../ramdisk.bin)
-# MTK LK: base 0x40000000, kernel at 0x40080000
-mkbootimg --header_version 2 --kernel out-pad/Image --ramdisk out-pad/ramdisk.bin \
-  --base 0x40000000 --kernel_offset 0x80000 --ramdisk_offset 0x4000000 --second_offset 0 \
-  --tags_offset 0x7c08000 --dtb /dev/null --dtb_offset 0x7c08000 --pagesize 2048 \
-  --cmdline "console=null" -o out-pad/pad-boot.img
+python3 ../tools/mkboot_v2.py out-pad/Image out-pad/ramdisk.bin out-pad/pad-boot.img
 ls -l out-pad/pad-boot.img
