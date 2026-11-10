@@ -13,5 +13,6 @@ aarch64-linux-gnu-objcopy -O binary out-pad/shim.elf out-pad/Image
 size=$(aarch64-linux-gnu-nm out-pad/shim.elf | awk '$3=="_end"{print strtonum("0x"$1)}')
 truncate -s "$size" out-pad/Image
 (cd out-pad && rm -rf rd && mkdir rd && cd rd && echo x > x && find . | cpio -o -H newc --quiet | gzip -9 > ../ramdisk.bin)
-python3 ../tools/mkboot_v2.py out-pad/Image out-pad/ramdisk.bin out-pad/pad-boot.img
+[ -f ../dtb/pad.dtb ] || { echo "missing dtb/pad.dtb: run python3 tools/extract_dtb.py <your boot.img> dtb/pad.dtb" >&2; exit 1; }
+python3 ../tools/mkboot_v2.py out-pad/Image out-pad/ramdisk.bin out-pad/pad-boot.img console=null ../dtb/pad.dtb
 ls -l out-pad/pad-boot.img
