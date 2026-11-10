@@ -435,3 +435,11 @@ What it took today (in order): 0058 HID services (Apple IOHIDFamily-1915 user cl
 ## realme Pad RMP2102 (MT6768) port — handoff
 Observed (user dumps, 2026-11-10): eMMC msdc0 (userdata=mmcblk0p46), GICv3 GICD 0x0c000000 / GICR 0x0c040000 stride 0x20000, PSCI, EL2 NS (bootopt=64S3,64N2), RAM 0x40000000.., main bank 0xc0000000-0x1bfff5fff, ramoops 0x4d010000 (0xe0000), LK fb 0x7c730000 1216x2016x3 buffers stride 4864 32bpp (visible 1200x2000), panel nt36523b DSI video (LK-initialised), touch Himax HX83102E on SPI2 0x11012000 (Oplus touchpanel driver), PMIC MT6358 via pwrap 0x1000d000, keys mtk-kpd.
 Next: milestone 0 = shim/build-pad.sh (fb text + PSCI reset); needs correct boot.img header (MTK LK) from `dd if=boot bs=4096 count=1`. Then: eMMC (msdc) driver replacing shim/ufs.c, mkadt for MT6768, touch SPI, keys.
+
+### Pad bring-up log (2026-11-10)
+- `fastboot boot` is ignored by this realme LK (cmdline marker test); test via `recovery` partition instead (Android rewrites stock recovery every boot via vendor_flash_recovery; harmless).
+- Stock backups on laptop: ~/recovery_stock.img, ~/boot.img (Magisk). Restore: `fastboot flash recovery ~/recovery_stock.img`.
+- LK needs dtb section (dt table, copied from stock) and a gzip kernel (stock kernel is Image.gz). Repack of stock kernel+ramdisk via tools/mkboot_like.py works (boots "No command" stock recovery).
+- Earlier raw-Image shim attempts => bootreason lk_crash / HW_Reboot, no ramoops breadcrumb (shim never ran).
+- NEXT: test `gzip -9 -n -c shim/out-pad/Image > ~/Image.gz; python3 tools/mkboot_like.py ~/recovery_stock.img ~/Image.gz ~/rr ~/pad2.img`, flash to recovery, `fastboot reboot recovery`, then in Android: `strings /sys/fs/pstore/* | grep -a IOSSWEET`. (~/rr = stock ramdisk from tools/unpack_img.py)
+- If still nothing: bootreason / aee db are encrypted; consider LK log via expdb, or add dtb-based handoff check (LK may need kernel loaded at 0x40080000 with text_offset handled).
