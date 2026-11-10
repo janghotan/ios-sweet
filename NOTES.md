@@ -431,3 +431,7 @@ What it took today (in order): 0058 HID services (Apple IOHIDFamily-1915 user cl
      cpu_init, before arm_vm_init.
   5. panic hook at top of panic_trap_to_debugger: va_copy + _doprnt(fmt, &copy, sweet_early_putc, 16).
   Verify with tools/xnu-cc.py (compile+symbols) and patch-order simulation before the single CI run.
+
+## realme Pad RMP2102 (MT6768) port — handoff
+Observed (user dumps, 2026-11-10): eMMC msdc0 (userdata=mmcblk0p46), GICv3 GICD 0x0c000000 / GICR 0x0c040000 stride 0x20000, PSCI, EL2 NS (bootopt=64S3,64N2), RAM 0x40000000.., main bank 0xc0000000-0x1bfff5fff, ramoops 0x4d010000 (0xe0000), LK fb 0x7c730000 1216x2016x3 buffers stride 4864 32bpp (visible 1200x2000), panel nt36523b DSI video (LK-initialised), touch Himax HX83102E on SPI2 0x11012000 (Oplus touchpanel driver), PMIC MT6358 via pwrap 0x1000d000, keys mtk-kpd.
+Next: milestone 0 = shim/build-pad.sh (fb text + PSCI reset); needs correct boot.img header (MTK LK) from `dd if=boot bs=4096 count=1`. Then: eMMC (msdc) driver replacing shim/ufs.c, mkadt for MT6768, touch SPI, keys.

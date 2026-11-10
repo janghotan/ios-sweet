@@ -1,10 +1,17 @@
 #pragma once
 #include <stdint.h>
 
+#ifdef PAD	/* realme Pad RMP2102 (MT6768): LK videolfb */
+#define FB_BASE		0x7c730000UL
+#define FB_W		1200
+#define FB_H		2000
+#define FB_STRIDE	4864		/* 1216 px * 4, 3 buffers stacked */
+#else
 #define FB_BASE		0x9c000000UL	/* reserved-memory cont_splash_region */
 #define FB_W		1080
 #define FB_H		2400
 #define FB_STRIDE	(FB_W * 4)	/* a8r8g8b8, matches mainline simplefb */
+#endif
 
 #define RED	0xffff0000U
 #define BLUE	0xff0000a0U
