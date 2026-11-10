@@ -16,3 +16,5 @@ truncate -s "$size" out-pad/Image
 [ -f ../dtb/pad.dtb ] || { echo "missing dtb/pad.dtb: run python3 tools/extract_dtb.py <your boot.img> dtb/pad.dtb" >&2; exit 1; }
 python3 ../tools/mkboot_v2.py out-pad/Image out-pad/ramdisk.bin out-pad/pad-boot.img console=null ../dtb/pad.dtb
 ls -l out-pad/pad-boot.img
+
+[ -f ~/recovery_stock.img ] && python3 ../tools/mkboot_like.py ~/recovery_stock.img out-pad/Image out-pad/ramdisk.bin out-pad/pad-recovery.img && ls -l out-pad/pad-recovery.img
